@@ -120,91 +120,44 @@ VALUES
 (4,13),
 (4,12);
 
-SELECT nom, 
-	   (adresse+ville+pays) AS adresse,
-	   count(excli.id_expeditions) AS nombre_expedié,
-	   count(expd.id_client) AS expeditions_reçu
-FROM
-	clients
- JOIN 
-	expeditions expd
-	ON expd.id_client=clients.id
- JOIN 
-	EXPEDITIONS_clients excli
-	ON excli.id_expeditions=expd.id
-GROUP BY
-	nom, 
-	(adresse+ville+pays);
 
-	----
 
-SELECT 
-	c.nom AS nom_client, 
-	c.adresse AS adresse_client, 
-	CONCAT(c.adresse, ', ', c.ville, ', ', c.pays) AS adresse_complete, 
-    COUNT(DISTINCT ec.id_expeditions) AS nb_expeditions_envoyees, 
-	COUNT(DISTINCT ec2.id_expeditions) AS nb_expeditions_recues
-FROM clients c
-LEFT JOIN expeditions_clients ec ON c.id = ec.id_client
-LEFT JOIN expeditions_clients ec2 ON c.id = ec2.id_client
-GROUP BY 
-	c.id, c.nom, c.adresse, c.ville, c.pays;
 
-	---- !!!!!! REQUËTE MARCHE MAIS colonne se multiplie
+--renome les colonnes--
+EXEC sp_rename 'expeditions.id_client', 'id_client_receveur', 'COLUMN';
+EXEC sp_rename 'expeditions_clients.id_client', 'id_client_expediteur', 'COLUMN';
+
+
+--<<<<<<<<<<<<<<<<<<< MARCHE >>>>>>>>>>>>>>>>>>>>>>>>>
 
 SELECT c.nom AS nom_client, 
-		c.adresse AS adresse_client, 
-		CONCAT(c.adresse, ', ', c.ville, ', ', c.pays) AS adresse_complete,
-       COUNT(DISTINCT e2.id) AS nb_expeditions_envoyees, 
-	   COUNT(e.id_client) AS nb_expeditions_recues
+       c.adresse AS adresse_client, 
+       CONCAT(c.adresse, ', ', c.ville, ', ', c.pays) AS adresse_complete,
+       COUNT(DISTINCT ec.id_expeditions) AS nb_expeditions_envoyees, 
+       (SELECT COUNT(*) FROM expeditions WHERE id_client_receveur = c.id) AS nb_expeditions_recues
 FROM clients c
-LEFT JOIN expeditions_clients ec ON c.id = ec.id_client
-LEFT JOIN expeditions e ON e.id_client= c.id
-LEFT JOIN expeditions e2 ON ec.id_expeditions = e2.id
+LEFT JOIN expeditions_clients ec ON c.id = ec.id_client_expediteur
 GROUP BY c.id, c.nom, c.adresse, c.ville, c.pays;
 
+--<<<<<<<<<<<<<<<<<<< MARCHE >>>>>>>>>>>>>>>>>>>>>>>>>	
+	
 
-
-select *	from expeditions where id_client=4; ---
-
-
-SELECT c.nom AS nom_client, 
-	c.adresse AS adresse_client, 
-	CONCAT(c.adresse, ', ', c.ville, ', ', c.pays) AS adresse_complete,
-       COUNT(DISTINCT ec.id_expeditions) AS nb_expeditions_envoyees,
-	   COUNT(DISTINCT ec2.id_expeditions) AS nb_expeditions_recues
-FROM clients c
-LEFT JOIN expeditions_clients ec ON c.id = ec.id_client
-LEFT JOIN expeditions e ON ec.id_expeditions = e.id
-LEFT JOIN expeditions_clients ec2 ON e.id = ec2.id_expeditions
-GROUP BY c.id, c.nom, c.adresse, c.ville, c.pays;
-
-
-
-----
-
-SELECT c.nom AS nom_client, c.adresse AS adresse_client, CONCAT(c.adresse, ', ', c.ville, ', ', c.pays) AS adresse_complete,
-       COUNT(DISTINCT e1.id) AS nb_expeditions_envoyees, COUNT(DISTINCT e2.id) AS nb_expeditions_recues
-FROM clients c
-LEFT JOIN expeditions_clients ec ON c.id = ec.id_client
-LEFT JOIN expeditions e1 ON ec.id_expeditions = e1.id AND e1.id_entrepot_source = e1.id_entrepot_source
-LEFT JOIN expeditions e2 ON ec.id_expeditions = e2.id AND e2.id_entrepot_destination = e1.id_entrepot_destination
-GROUP BY c.id, c.nom, c.adresse, c.ville, c.pays;
 
 
 ---Pour chaque expédition, affichez son ID, son poids, le nom du client qui l'a envoyée, 
 --le nom du client qui l'a reçue et le statut
 
-SELECT 
-	exped.id, 
-	poids, 
-	cli.nom as client_envoyeur,
-	exped.id_client as client_receveur
-FROM	
-	expeditions exped
-INNER JOIN 
-	clients cli
-	ON cli.id=exped.id_client;
+
+
+SELECT e.id AS id_expedition,
+       e.poids AS poids,
+       c1.nom AS expediteur_nom,
+       c2.nom AS destinataire_nom,
+       e.statut AS statut
+FROM expeditions e
+INNER JOIN expeditions_clients ec ON ec.id_expeditions=e.id
+JOIN clients c1 ON ec.id_client_expediteur = c1.id
+JOIN clients c2 ON e.id_client_receveur = c2.id;
 
 
 
@@ -220,3 +173,6 @@ FROM
 SELECT *
 FROM 
 	expeditions_clients;
+
+SELECT *
+FROM clients

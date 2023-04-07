@@ -2,7 +2,8 @@
 --Affichez les entrepôts qui ont envoyé au moins une expédition en transit.
 
 SELECT
-	nom_entrepot
+	nom_entrepot,
+	statut
 FROM
 	entrepots ent
 INNER JOIN 
@@ -14,7 +15,8 @@ WHERE
 -- Affichez les entrepôts qui ont reçu au moins une expédition en transit.
 
 SELECT
-	nom_entrepot
+	nom_entrepot,
+	statut
 FROM
 	entrepots ent
 INNER JOIN 
@@ -78,7 +80,8 @@ GROUP BY MONTH(date_expedition);
 
 --Affichez les entrepôts qui ont envoyé des expéditions au cours des 30 derniers jours.
 SELECT
-	nom_entrepot
+	nom_entrepot,
+	date_expedition
 FROM
 	entrepots ent
 INNER JOIN 
@@ -86,12 +89,13 @@ INNER JOIN
 	ON ent.id=expe.id_entrepot_source
 WHERE 
 	day(date_expedition)-day(getdate())<30
-GROUP BY nom_entrepot;
+GROUP BY nom_entrepot,date_expedition;
 
 
 --Affichez les entrepôts qui ont reçu des expéditions au cours des 30 derniers jours.
 SELECT
-	nom_entrepot
+	nom_entrepot,
+	date_expedition
 FROM
 	entrepots ent
 INNER JOIN 
@@ -100,166 +104,35 @@ INNER JOIN
 WHERE 
 	statut='arriver' AND
 	day(date_expedition)-day(getdate())<30
-GROUP BY nom_entrepot;
+GROUP BY nom_entrepot,date_expedition;
 
 
 
 --Affichez les expéditions qui ont été livrées dans un délai de moins de 5 jours ouvrables
 
----marche mais compte le weekend---
+--ajout de valeur pour avril
+INSERT INTO expeditions (date_expedition, id_entrepot_source, id_entrepot_destination, poids, statut)
+VALUES
+    ('2023-04-04', 1, 3, 120.5, 'arriver'),
+    ('2023-04-05', 2, 4, 220.7, 'arriver'),
+    ('2023-04-06', 3, 2, 350.2, 'arriver');
+
+
+
 SELECT 
 	*
 FROM
 	expeditions
 WHERE
 	statut='arriver' 
-	AND DATEPART(weekday, date_expedition) NOT IN (7,6) AND DATEDIFF(day, date_expedition, GETDATE())<=5;
-
---<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
---- !!!!!FONCTIONNE !!!!---
-SELECT *
-FROM (
-		SELECT *
-		FROM
-			expeditions
-		WHERE
-		DATEPART(weekday, date_expedition) NOT IN (6,7)
-	) as JOUR_OUVRABLE
-WHERE
-	JOUR_OUVRABLE.statut='arriver' 
-	AND DATEDIFF(day, JOUR_OUVRABLE.date_expedition, GETDATE())<7;	
---<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
----marche mais compte le weekend---
-SELECT *
-FROM expeditions
-WHERE DATEDIFF(DAY, date_expedition, GETDATE()) <= 5
-AND DATEDIFF(WEEK, date_expedition, GETDATE()) * 2 +
-    CASE WHEN DATEPART(WEEKDAY, date_expedition) = 7 THEN 1 ELSE 0 END +
-    CASE WHEN DATEPART(WEEKDAY, GETDATE()) = 1 THEN 1 ELSE 0 END <= 5
-AND statut = 'arriver';
+	AND DATEPART(weekday, date_expedition) NOT IN (7,6) AND DATEDIFF(day, date_expedition, GETDATE())<=7;
 
 
----marche mais compte le weekend et azu dela de 5jours---
-CREATE FUNCTION fn_remove_weekend (@inputDate DATE)
-RETURNS DATE
-AS
-BEGIN
-    DECLARE @outputDate DATE = @inputDate
-
-    -- Retire le samedi
-    WHILE DATEPART(WEEKDAY, @outputDate) = 7
-        SET @outputDate = DATEADD(DAY, 1, @outputDate)
-
-    -- Retire le dimanche
-    WHILE DATEPART(WEEKDAY, @outputDate) = 1
-        SET @outputDate = DATEADD(DAY, 1, @outputDate)
-
-    RETURN @outputDate
-END
-
-SELECT *
-FROM expeditions
-WHERE DATEDIFF(day, dbo.fn_remove_weekend(GETDATE()), date_expedition) <= 5
-  AND DATEDIFF(day, dbo.fn_remove_weekend(date_expedition), date_expedition) <= 5
-  AND statut = 'arriver'
-
-
----marche mais compte le weekend---
-
-CREATE FUNCTION dbo.fn_rm_weekend (@inputDate DATE)
-RETURNS DATE
-AS
-BEGIN
-    DECLARE @outputDate DATE = @inputDate
-
-    -- Retire le samedi
-    WHILE DATEPART(WEEKDAY, @outputDate) = 7
-        SET @outputDate = DATEADD(DAY, 1, @outputDate)
-
-    -- Retire le dimanche
-    WHILE DATEPART(WEEKDAY, @outputDate) = 1
-        SET @outputDate = DATEADD(DAY, 1, @outputDate)
-
-    RETURN @outputDate
-END
-
-
-SELECT *
-FROM expeditions
-WHERE DATEDIFF(d, dbo.fn_remove_weekend(date_expedition), GETDATE()) <= 5
-  AND DATEDIFF(d, dbo.fn_remove_weekend(GETDATE()), dbo.fn_remove_weekend(date_expedition)) <= 5 
-  AND statut = 'arriver';
-
-CREATE FUNCTION expeditions_inf_5_jours_ouvrables()
-RETURNS TABLE
-AS
-RETURN (
-    SELECT *
-    FROM expeditions
-    WHERE statut = 'arriver'
-      AND DATEDIFF(WEEKDAY, date_expedition, GETDATE()) < 5
-);
-
-SELECT * FROM expeditions_inf_5_jours_ouvrables();
-
-
-----
-
-SELECT *
-FROM expeditions
-WHERE date_expedition >= DATEADD(dd, -4, GETDATE())
-AND DATEDIFF(dd, date_expedition, GETDATE()) - 
-    (DATEDIFF(wk, date_expedition, GETDATE()) * 2) -
-    CASE WHEN DATENAME(dw, date_expedition) = 'Sunday' THEN 1 ELSE 0 END -
-    CASE WHEN DATENAME(dw, GETDATE()) = 'Saturday' THEN 1 ELSE 0 END < 5
-
-----
-CREATE FUNCTION fn_remove_week (@inputDate DATETIME)
-RETURNS DATETIME
-AS
-BEGIN
-    DECLARE @outputDate DATETIME = @inputDate
-
-    -- Retire le samedi
-    IF DATEPART(WEEKDAY, @outputDate) = 7
-        SET @outputDate = DATEADD(DAY, 2, @outputDate)
-
-    -- Retire le dimanche
-    IF DATEPART(WEEKDAY, @outputDate) = 1
-        SET @outputDate = DATEADD(DAY, 1, @outputDate)
-
-    RETURN @outputDate
-END
-
-SELECT *
-FROM expeditions
-WHERE DATEDIFF(dd, date_expedition, dbo.fn_remove_week(GETDATE())) <= 5 
-  AND DATEDIFF(dd, dbo.fn_remove_week(GETDATE()), GETDATE()) <= 5
-  AND statut = 'arriver'
-
-
-
-  --- marche mais prends en compte le weekend
-SELECT *
-FROM expeditions
-WHERE date_expedition >= DATEADD(day, -5, GETDATE())
-AND DATEDIFF(day, date_expedition, GETDATE()) - 
-    (DATEDIFF(week, date_expedition, GETDATE()) * 2) -
-    CASE WHEN DATENAME(weekday, date_expedition) = 'Sunday' THEN 1 ELSE 0 END -
-    CASE WHEN DATENAME(weekday, GETDATE()) = 'Saturday' THEN 1 ELSE 0 END < 5
 
 
 
 SELECT * FROM entrepots;
 SELECT * FROM EXPEDITIONS;
 
-UPDATE expeditions SET date_expedition=REPLACE(date_expedition,YEAR(date_expedition),'2023');
 
-UPDATE expeditions SET date_expedition= DATEADD(year, 1, date_expedition) WHERE id in(24,25,26);
 
-INSERT INTO expeditions (date_expedition, id_entrepot_source, id_entrepot_destination, poids, statut)
-VALUES
-    ('2022-04-04', 1, 3, 120.5, 'arriver'),
-    ('2022-04-05', 2, 4, 220.7, 'arriver'),
-    ('2022-04-06', 3, 2, 350.2, 'arriver')
