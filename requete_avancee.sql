@@ -115,19 +115,20 @@ WHERE
 	statut='arriver' 
 	AND DATEPART(weekday, date_expedition) NOT IN (7,6) AND DATEDIFF(day, date_expedition, GETDATE())<=5;
 
----marche mais compte le weekend---
+--<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+--- !!!!!FONCTIONNE !!!!---
 SELECT *
 FROM (
 		SELECT *
 		FROM
 			expeditions
 		WHERE
-		DATEPART(weekday, date_expedition) NOT IN (7,6)
+		DATEPART(weekday, date_expedition) NOT IN (6,7)
 	) as JOUR_OUVRABLE
 WHERE
 	JOUR_OUVRABLE.statut='arriver' 
-	AND DATEDIFF(day, JOUR_OUVRABLE.date_expedition, DATEPART(weekday,GETDATE()))<=5;	
-
+	AND DATEDIFF(day, JOUR_OUVRABLE.date_expedition, GETDATE())<7;	
+--<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 ---marche mais compte le weekend---
 SELECT *
@@ -255,5 +256,10 @@ SELECT * FROM EXPEDITIONS;
 
 UPDATE expeditions SET date_expedition=REPLACE(date_expedition,YEAR(date_expedition),'2023');
 
-UPDATE expeditions SET date_expedition= DATEADD(year, -1, date_expedition);
+UPDATE expeditions SET date_expedition= DATEADD(year, 1, date_expedition) WHERE id in(24,25,26);
 
+INSERT INTO expeditions (date_expedition, id_entrepot_source, id_entrepot_destination, poids, statut)
+VALUES
+    ('2022-04-04', 1, 3, 120.5, 'arriver'),
+    ('2022-04-05', 2, 4, 220.7, 'arriver'),
+    ('2022-04-06', 3, 2, 350.2, 'arriver')

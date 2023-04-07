@@ -93,6 +93,25 @@ HAVING
 
 --Affichez les expéditions qui ont été livrées avec un retard de plus de 2 jours ouvrables.
 
+--création colonne date_livraison et date_livraison_prévu--
+ALTER TABLE expeditions 
+ADD date_livraison_prévu date , date_livraison date;
+
+update expeditions SET date_livraison_prévu=DATEADD(day, 7,date_expedition);
+
+update expeditions SET date_livraison=DATEADD(day, 7,date_expedition) WHERE id IN (1,3,5,8,10,4,9,7);
+
+update expeditions SET date_livraison=DATEADD(day, 11,date_expedition) WHERE id IN (2,4,6,11);
+
+update expeditions SET date_livraison=DATEADD(day, 4,date_expedition) WHERE id IN (12,14,16,15,18);
+
+SELECT *
+FROM expeditions 
+WHERE 
+statut='arriver' AND
+DATEDIFF(DAY,date_livraison_prévu,date_livraison)>2;
+
+
 
 --Affichez le nombre total d'expéditions pour chaque jour du mois en cours, trié par ordre décroissant.
 
