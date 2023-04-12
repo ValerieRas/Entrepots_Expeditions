@@ -4,48 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace transport_logistique
+namespace Bdd.Table.Classes
 {
-    public class Clients
+    public class Clients 
     {
-        public int id { get; set; }
-        public string nom { get; set; }
-        public string adresse { get; set; }
-        public string ville { get; set; }
-        public string pays { get; set; }
-
-
-
+        public int Id { get; set; }
+        public string Nom { get; set; }
+        public string Adresse { get; set; }
+        public string Ville { get; set; }
+        public string Pays { get; set; }
+        public List<Expeditions> ListeExpeditionsEnvoyées { get; set; }
     }
+
+    
 
     public class Entrepots
     {
-        public int id { get; set; }
-        public string nom_entrepot { get; set; }
-        public string adresse { get; set; }
-        public string ville { get; set; }
-        public string pays { get; set; }
-        public string continent { get; set; }
+        public int Id { get; set; }
+        public string NomEntrepot { get; set; }
+        public string Adresse { get; set; }
+        public string Ville { get; set; }
+        public string Pays { get; set; }
+        public string Continent { get; set; }
 
     }
 
     public class Expeditions
     {
-        public int id { get; set; }
-        public DateOnly date_expedition { get; set; }
-        public int id_entrepot_source { get; set; }
-        public int id_entrepot_destination { get; set; }
-        public decimal poids { get; set; }
-        public string statut { get; set; }
-        public DateTime date_livraison_prévu { get; set; }
-        public DateTime date_livraison { get; set; }
-        public Clients client_receveur { get; set; }
+        public int Id { get; set; }
+        public DateTime DateExpedition { get; set; }
+        public int IdEntrepotSource { get; set; }
+        public int IdEntrepotDestination { get; set; }
+        public decimal Poids { get; set; }
+        public string Statut { get; set; }
+        public DateTime DateLivraisonPrevu { get; set; }
+        public DateTime DateLivraison { get; set; }
+        public List<Clients> ListeClientReceveur { get; set; }
 
     }
 
-    public class Expeditions_clients
-    {
-        public Expeditions expedition { get; set; }
-        public Clients client { get; set; }
-    }
 }
