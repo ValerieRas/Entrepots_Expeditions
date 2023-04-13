@@ -105,5 +105,87 @@ namespace Entrepot.Repository
             }
         }
 
+           //Méthode pour DELETE un entrepot avec un ID 
+        public void BDD_Delete_Entrepot(int idEntrepot)
+        {
+            BDD_connect();
+
+            try
+            {
+                // Créer une nouvelle commande SQL pour insérer les données dans la base de données
+                string sql = $"DELETE FROM Entrepots WHERE id=@Identrepot";
+
+                SqlCommand commande = new SqlCommand(sql, connexion);
+                commande.Parameters.AddWithValue("@Identrepot", idEntrepot);
+
+                // Exécuter la commande SQL pour insérer les données
+                int nombreLignesAffectees = commande.ExecuteNonQuery();
+
+                if (nombreLignesAffectees > 0)
+                {
+                    Console.WriteLine("un entrepot a été supprimé !");
+                }
+                else
+                {
+                    Console.WriteLine("Échec de la suppression entrepot.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gérer les exceptions en cas d'erreur de connexion ou d'exécution de requête
+                Console.WriteLine("Erreur : " + ex.Message);
+            }
+            finally
+            {
+                // Fermer la connexion
+                connexion.Close();
+            }
+        }
+
+           //Méthode pour Update un entrepot avec un ID
+        public void BDD_Update_Entrepot(Entrepots entrepot)
+        {
+            BDD_connect();
+
+            try
+            {
+                // Créer une nouvelle commande SQL pour insérer les données dans la base de données
+                string sql = $"UPDATE Entrepots SET Nom_Entrepot=@NomEntrepot, Adresse=@Adresse, Ville=@Ville, Pays=@Pays, Continent=@Continent WHERE id=@Id";
+
+                SqlCommand commande = new SqlCommand(sql, connexion);
+
+                commande.Parameters.AddWithValue("@Id", entrepot.Id);
+                commande.Parameters.AddWithValue("@NomEntrepot", entrepot.NomEntrepot);
+                commande.Parameters.AddWithValue("@Adresse", entrepot.Adresse);
+                commande.Parameters.AddWithValue("@Ville", entrepot.Ville);
+                commande.Parameters.AddWithValue("@Pays", entrepot.Pays);
+                commande.Parameters.AddWithValue("@Continent", entrepot.Continent);
+
+                
+
+                // Exécuter la commande SQL pour insérer les données
+                int nombreLignesAffectees = commande.ExecuteNonQuery();
+
+                if (nombreLignesAffectees > 0)
+                {
+                    Console.WriteLine("un entrepot a été modifié !");
+                }
+                else
+                {
+                    Console.WriteLine("Échec de la modification entrepot.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gérer les exceptions en cas d'erreur de connexion ou d'exécution de requête
+                Console.WriteLine("Erreur : " + ex.Message);
+            }
+            finally
+            {
+                // Fermer la connexion
+                connexion.Close();
+            }
+        }
+
     }
 }

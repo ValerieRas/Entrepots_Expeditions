@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Bdd.Table.Classes;
+using Client.Repository;
 
 namespace Expedition.Repository
 {
@@ -31,7 +33,7 @@ namespace Expedition.Repository
             try
             {
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
-                string sql = "INSERT INTO Expeditions (DateExpedition, IdEntrepotSource, IdEntrepotDestination, Poids, Statut) VALUES (@date, @source, @destination, @poids, @statut)";
+                string sql = "INSERT INTO Expeditions (Date_Expedition, Id_Entrepot_Source, Id_Entrepot_Destination, Poids, Statut) VALUES (@date, @source, @destination, @poids, @statut)";
                 SqlCommand commande = new SqlCommand(sql, connexion);
                 commande.Parameters.AddWithValue("@date", expedition.DateExpedition);
                 commande.Parameters.AddWithValue("@source", expedition.IdEntrepotSource);
@@ -67,6 +69,8 @@ namespace Expedition.Repository
         {
             BDD_connect();
             List<Expeditions> expeditions = new List<Expeditions>();
+            ClientRepository ClientRepo = new ClientRepository();
+            
             try
             {
                 // Exécuter une requête SQL pour récupérer des données
@@ -76,6 +80,7 @@ namespace Expedition.Repository
 
                 while (lecteur.Read())
                 {
+
                     Expeditions expedition = new Expeditions();
                     expedition.Id = (int)lecteur["Id"];
                     expedition.DateExpedition = (DateTime)lecteur["Date_Expedition"];
@@ -83,19 +88,19 @@ namespace Expedition.Repository
                     expedition.IdEntrepotDestination = (int)lecteur["Id_Entrepot_Destination"];
                     expedition.Poids = (decimal)lecteur["Poids"];
                     expedition.Statut = (string)lecteur["Statut"];
-                    expedition.DateLivraisonPrevu = (DateTime)lecteur["Date_Livraison_Prévu"];
-                    expedition.DateLivraison = (DateTime)lecteur["Date_Livraison"];
-                    //expedition.ListeClientReceveur = (List<Clients>)lecteur["id_client_receveur"];
+                    
+                    expedition.DateLivraisonPrevu = lecteur["Date_Livraison_Prévu"] as DateTime?;
+                    expedition.DateLivraison = lecteur["Date_Livraison"] as DateTime?;
 
-                    //  expedition.ClientReceveur = new Clients {
-                    //                 Id = (int)lecteur["ClientReceveur_Id"],
-                    //                 Nom = (string)lecteur["Nom"],
-                    //                 Adresse = (string)lecteur["Adresse"],
-                    //                 Ville = (string)lecteur["Ville"],
-                    //                 Pays = (string)lecteur["Pays"]
-                    //             };
+                    if (!lecteur.IsDBNull(lecteur.GetOrdinal("id_client_receveur")))
+                    {
+                        int IdClientReceveur = (int)lecteur["id_client_receveur"];
 
+                        Clients clientreceveur = new Clients();
+                        clientreceveur = ClientRepo.BDD_Find_Client(IdClientReceveur);
 
+                        expedition.ClientReceveur = clientreceveur;
+                    }
                     expeditions.Add(expedition);
                 }
 
@@ -117,6 +122,7 @@ namespace Expedition.Repository
 
     }
 }
+
 
 
 
