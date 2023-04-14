@@ -11,6 +11,28 @@ internal class Program
     {
         BDD bdd = new BDD();
 
+
+        ///>>>>>>>>>>>>>>>>CLIENT<<<<<<<<<<<<<<<<<<<<<<<
+
+        ////REPO Client 
+
+        ClientRepository ClientRepo = new ClientRepository();
+
+
+        //Update un client
+
+        //Clients UpdateClient = new Clients();
+        //UpdateClient.Id = 5;
+        //UpdateClient.Nom = "Val";
+        //UpdateClient.Adresse = "Grenoble";
+        //UpdateClient.Ville = "Grenoble";
+        //UpdateClient.Pays = "Australie";
+
+        //ClientRepo.BDD_Update_Client(UpdateClient);
+
+
+        ////Créer un client
+
         //Clients NewClient = new Clients();
 
         //NewClient.Nom = "Val";
@@ -20,6 +42,34 @@ internal class Program
 
         //bdd.BDD_create(NewClient);
 
+
+
+        ////Supprimer un client
+
+        //ClientRepo.BDD_Delete_Client(5);
+
+
+
+        //Lecture Client
+
+        //List<Clients> ListeClient = new List<Clients>();
+
+        //ListeClient = ClientRepo.BDD_Read_Client();
+
+        //foreach (Clients client in ListeClient)
+
+        //{
+        //    Console.WriteLine(client.ToString());
+        //}
+
+
+
+        ////>>>>>>>>>>>>>>>>ENTREPOTS<<<<<<<<<<<<<<<<<<<<<<<
+
+
+        EntrepotsRepository EntreRepo = new EntrepotsRepository();
+
+        ////Création d'un entrepot
 
         //Entrepots NewEntrepot = new Entrepots();
 
@@ -31,8 +81,8 @@ internal class Program
 
         //EntreRepo.BDD_Create_Entrepots(NewEntrepot);
 
-        //Update Entrepots
-        EntrepotsRepository EntreRepo = new EntrepotsRepository();
+        ////Update Entrepots
+
         //Entrepots UpdateEntrepot = new Entrepots();
 
         //UpdateEntrepot.Id = 10;
@@ -43,13 +93,27 @@ internal class Program
         //UpdateEntrepot.Continent = "Amérique";
 
         //EntreRepo.BDD_Update_Entrepot(UpdateEntrepot);
-        //Lire info entrepots    
-        EntreRepo.BDD_Delete_Entrepot(10);
-        EntreRepo.BDD_read_entrepot();
+
+        ////Supprimer un entrepot
+
+        //EntreRepo.BDD_Delete_Entrepot(10);
+
+        ////Lire info entrepots    
+
+        //EntreRepo.BDD_read_entrepot();
+
+
+
+
+
+        ////>>>>>>>>>>>>>>>>EXPEDITIONS<<<<<<<<<<<<<<<<<<<<<<<
+
+
+        ExpeditionsRepository ExpedRepo = new ExpeditionsRepository();
 
 
         //// Créer une expedition
-        //ExpeditionsRepository ExpedRepo = new ExpeditionsRepository();
+
 
         //Expeditions NewExpeditions = new Expeditions();
         //NewExpeditions.DateExpedition = new DateTime(2023, 04, 13);
@@ -59,16 +123,14 @@ internal class Program
         //NewExpeditions.Statut = "en transit";
 
         //ExpedRepo.BDD_Create_Expeditions(NewExpeditions);
-        
+
         //////Lire info Expedition
-        /////
-        
 
-        //List<Expeditions>ListeExpeditions= new List<Expeditions>();
+        //List<Expeditions> ListeExpeditions = new List<Expeditions>();
 
-        //ListeExpeditions= ExpedRepo.BDD_Read_Expeditions();
+        //ListeExpeditions = ExpedRepo.BDD_Read_Expeditions();
 
-        //foreach(Expeditions Expedition in ListeExpeditions)
+        //foreach (Expeditions Expedition in ListeExpeditions)
         //{
         //    Console.WriteLine(Expedition.Id.ToString());
         //    Console.WriteLine(Expedition.DateExpedition.ToString());
@@ -79,31 +141,6 @@ internal class Program
         //    Console.WriteLine(Expedition.DateLivraisonPrevu.ToString());
         //    Console.WriteLine(Expedition.DateLivraison.ToString());
         //    Console.WriteLine(Expedition.ClientReceveur.ToString());
-
-        //}
-
-        ////// REPO Client 
-        //ClientRepository ClientRepo = new ClientRepository();
-
-
-        ////Update un client
-        //Clients UpdateClient = new Clients();
-        //UpdateClient.Id = 5;
-        //UpdateClient.Nom = "Val";
-        //UpdateClient.Adresse = "Grenoble";
-        //UpdateClient.Ville = "Grenoble";
-        //UpdateClient.Pays = "Nouvelle zelande";
-
-        //ClientRepo.BDD_Update_Client(UpdateClient);
-
-        ////Lecture Client
-        //List<Clients> ListeClient = new List<Clients>();
-
-        //ListeClient=ClientRepo.BDD_Read_Client();
-
-        //foreach (Clients client in ListeClient)
-        //{
-        //    Console.WriteLine(client.ToString());
         //}
 
 

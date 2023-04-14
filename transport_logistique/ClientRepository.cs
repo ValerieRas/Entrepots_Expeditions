@@ -10,36 +10,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Sql.Data.Connect;
 
+
 namespace Client.Repository
 { 
     public class ClientRepository
     {
-        // BDD connection15 = new BDD();
-        // connection15.BDD_Connect1;
-
-        private SqlConnection connexion;
-        public void BDD_Connect()
-        {
-
-            // Définir la chaîne de connexion
-            string connectionString = @"Data Source=VALANGELA\SQLEXPRESS;Initial Catalog=transport_logistique;Integrated Security=True";
-
-            // Instancier la connexion
-            connexion = new SqlConnection(connectionString);
-
-            // Ouvrir la connexion
-            connexion.Open();
-        }
-
-
+        
         public List<Clients> BDD_Read_Client()
         {
-            BDD_Connect();
-
+            
             List<Clients> ListeClients = new List<Clients>();
+
+            SqlConnection? connexion = null;
 
             try
             {
+            connexion = BDD.BDD_connect();
+            connexion.Open();
 
                 // Exécuter une requête SQL pour récupérer des données
                 string sql = "SELECT * FROM clients";
@@ -80,13 +67,15 @@ namespace Client.Repository
         //méthode qui va chercher un client avec son ID
         public Clients BDD_Find_Client(int Id_client)
         {
-            BDD_Connect();
 
-            Clients client = new Clients();
-            
+            Clients client = new Clients();            
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
 
                 // Exécuter une requête SQL pour récupérer des données
                 string sql = "SELECT * FROM clients WHERE id=@Id";
@@ -127,10 +116,14 @@ namespace Client.Repository
         // Méthode pour ajouter un nouvel objet CLIENT à la base de données
         public void BDD_Create_Client(Clients client)
         {
-            BDD_Connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
+
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = "INSERT INTO clients (nom, adresse, ville, pays) VALUES (@nom, @adresse, @ville, @pays)";
                 SqlCommand commande = new SqlCommand(sql, connexion);
@@ -166,10 +159,14 @@ namespace Client.Repository
         //Méthode pour DELETE un client avec un ID 
         public void BDD_Delete_Client(int idClient)
         {
-            BDD_Connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
+
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = $"DELETE FROM Clients WHERE id=@Idclient";
 
@@ -200,13 +197,16 @@ namespace Client.Repository
             }
         }
 
-        //Méthode pour Update un client avec un ID
+        //Méthode pour Update un client 
         public void BDD_Update_Client(Clients client)
         {
-            BDD_Connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = $"UPDATE clients SET nom=@nom, adresse=@adresse, ville=@ville, pays=@pays WHERE id=@Id";
 

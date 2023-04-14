@@ -5,31 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bdd.Table.Classes;
+using Sql.Data.Connect;
 
 namespace Entrepot.Repository
 {
     public class EntrepotsRepository
     {
-        private SqlConnection connexion;
-        public void BDD_connect()
+        
+        public void BDD_read_entrepot()
         {
 
-            // Définir la chaîne de connexion
-            string connectionString = @"Data Source=VALANGELA\SQLEXPRESS;Initial Catalog=transport_logistique;Integrated Security=True";
-
-            // Instancier la connexion
-            connexion = new SqlConnection(connectionString);
-
-            // Ouvrir la connexion
-            connexion.Open();
-        }
-
-         public void BDD_read_entrepot()
-         {
-            BDD_connect();
+            SqlConnection? connexion = null;
 
             try
             {
+            connexion = BDD.BDD_connect();
+            connexion.Open();
                 
                 // Exécuter une requête SQL pour récupérer des données
                 string sql = "SELECT * FROM entrepots";
@@ -67,10 +58,14 @@ namespace Entrepot.Repository
             // Méthode pour ajouter un nouvel objet ENTREPOT à la base de données
         public void BDD_Create_Entrepots(Entrepots entrepot)
         {
-            BDD_connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
+
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = "INSERT INTO entrepots (Nom_Entrepot, Adresse, Ville, Pays, Continent) VALUES (@NomEntrepot, @Adresse, @Ville, @Pays, @Continent)";
                 SqlCommand commande = new SqlCommand(sql, connexion);
@@ -108,10 +103,14 @@ namespace Entrepot.Repository
            //Méthode pour DELETE un entrepot avec un ID 
         public void BDD_Delete_Entrepot(int idEntrepot)
         {
-            BDD_connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
+
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = $"DELETE FROM Entrepots WHERE id=@Identrepot";
 
@@ -145,10 +144,14 @@ namespace Entrepot.Repository
            //Méthode pour Update un entrepot avec un ID
         public void BDD_Update_Entrepot(Entrepots entrepot)
         {
-            BDD_connect();
+
+            SqlConnection? connexion = null;
 
             try
             {
+                connexion = BDD.BDD_connect();
+                connexion.Open();
+
                 // Créer une nouvelle commande SQL pour insérer les données dans la base de données
                 string sql = $"UPDATE Entrepots SET Nom_Entrepot=@NomEntrepot, Adresse=@Adresse, Ville=@Ville, Pays=@Pays, Continent=@Continent WHERE id=@Id";
 
